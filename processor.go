@@ -39,6 +39,8 @@ func main() {
 			os.Exit(1)
 		}
 
+		fmt.Println("Read Byte buffer with content: ", buf)
+
 		decodedMessage := flightMessage.CreateMessageFromBinary(buf)
 
 		fmt.Println("Decoded message was: ", decodedMessage)

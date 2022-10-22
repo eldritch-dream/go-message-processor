@@ -1,15 +1,26 @@
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
+	"math"
 	"net"
-	"strings"
 	"time"
 )
 
 // only needed below for sample processing
 
-const message_str string = "{\"tail_number\": \"N20904\",\"engine_count\": 2,\"engine_name\": \"GEnx-1B\",\"latitude\": 39.11593389482025,\"longitude\": -67.32425341289998,\"altitude\": 36895.5,\"temperature\": -53.2}"
+const HEADER string = "AIR"
+const TAIL_NUMBER_SIZE uint = 10
+const ENGINE_COUNT uint = 4
+const ENGINE_NAME_SIZE uint = 7
+const LATITUDE float64 = 39.11593389482025
+const LONGITUDE float64 = -67.32425341289998
+const ALTITUDE float64 = 36895.5
+const TEMPERATURE float64 = -53.2
+
+const TAIL_NUMBER string = "1234ABCDEF"
+const ENGINE_NAME string = "GEnx-1B"
 
 func main() {
 
@@ -23,9 +34,27 @@ func main() {
 
 	// run loop forever (or until ctrl-c)
 	for {
-		newmessage := strings.ToUpper(message_str)
 		// send new string back to client
-		conn.Write([]byte(newmessage + "\n"))
-		time.Sleep(30000)
+		var messageBytes []byte
+		messageBytes = append(messageBytes, HEADER...)
+		messageBytes = append(messageBytes, byte(TAIL_NUMBER_SIZE))
+		messageBytes = append(messageBytes, TAIL_NUMBER...)
+		messageBytes = append(messageBytes, byte(ENGINE_COUNT))
+		messageBytes = append(messageBytes, byte(ENGINE_NAME_SIZE))
+		messageBytes = append(messageBytes, ENGINE_NAME...)
+		messageBytes = append(messageBytes, Float64bytes(LATITUDE)...)
+		messageBytes = append(messageBytes, Float64bytes(LONGITUDE)...)
+		messageBytes = append(messageBytes, Float64bytes(ALTITUDE)...)
+		messageBytes = append(messageBytes, Float64bytes(TEMPERATURE)...)
+
+		conn.Write(messageBytes)
+		time.Sleep(time.Second * 5)
 	}
+}
+
+func Float64bytes(float float64) []byte {
+	bits := math.Float64bits(float)
+	bytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(bytes, bits)
+	return bytes
 }
