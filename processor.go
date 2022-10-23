@@ -28,6 +28,7 @@ func main() {
 		conn, err := net.Dial("tcp", server_addr)
 		if err != nil {
 			fmt.Printf("Dial tcp failed with error: %s", err)
+			continue
 		}
 
 		defer conn.Close()
@@ -39,6 +40,8 @@ func main() {
 		_, err = connReader.Read(buf)
 		if err != nil {
 			fmt.Printf("Error reading from connection: %s", err)
+			conn.Close()
+			continue
 		}
 
 		fmt.Println("Read Byte buffer with content: ", buf)

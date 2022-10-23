@@ -18,7 +18,7 @@ type FlightMessage struct {
 }
 
 var HEADER = []byte{0x41, 0x49, 0x52}
-
+//Tested manually through the test_server
 func CreateMessageFromBinary(messageBytes []byte) *FlightMessage {
 
 	messageReader := bytes.NewReader(messageBytes)

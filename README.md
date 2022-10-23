@@ -10,4 +10,9 @@ In order to run this simple processor application you will need to run the comma
 
  ## How to test
 
- TODO: Implement unit tests
+Run `go test .\flightMessage\` from the root directory, this will the unit tests.
+
+## Potential improvements
+
+* Implement a makefile build process to make building/testing/running a little more flexible
+* 
