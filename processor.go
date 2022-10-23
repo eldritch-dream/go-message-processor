@@ -29,6 +29,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	defer conn.Close()
+
 	connReader := bufio.NewReader(conn)
 	buf := make([]byte, 1024)
 
@@ -43,7 +45,7 @@ func main() {
 
 		decodedMessage := flightMessage.CreateMessageFromBinary(buf)
 
-		fmt.Println("Decoded message was: ", decodedMessage)
+		fmt.Printf("%+v\n", decodedMessage)
 
 	}
 
