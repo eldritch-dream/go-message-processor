@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net"
-	"time"
 )
-
-// only needed below for sample processing
 
 const HEADER string = "AIR"
 const TAIL_NUMBER_SIZE uint32 = 10
@@ -29,11 +26,10 @@ func main() {
 	// listen on all interfaces
 	ln, _ := net.Listen("tcp", ":8081")
 
-	// accept connection on port
-	conn, _ := ln.Accept()
-
 	// run loop forever (or until ctrl-c)
 	for {
+		// accept connection on port
+		conn, _ := ln.Accept()
 		// send new string back to client
 		var messageBytes []byte
 		messageBytes = append(messageBytes, HEADER...)
@@ -53,7 +49,7 @@ func main() {
 		messageBytes = append(messageBytes, Float64bytes(TEMPERATURE)...)
 
 		conn.Write(messageBytes)
-		time.Sleep(time.Second * 5)
+		conn.Close()
 	}
 }
 

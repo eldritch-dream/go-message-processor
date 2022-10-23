@@ -23,22 +23,22 @@ func main() {
 
 	fmt.Printf("TCP Address resolved to: %s", tcpAddr.String())
 
-	conn, err := net.Dial("tcp", server_addr)
-	if err != nil {
-		fmt.Printf("Dial tcp failed with error: %s", err)
-		os.Exit(1)
-	}
-
-	defer conn.Close()
-
-	connReader := bufio.NewReader(conn)
-	buf := make([]byte, 1024)
-
 	for {
-		_, err := connReader.Read(buf)
+
+		conn, err := net.Dial("tcp", server_addr)
+		if err != nil {
+			fmt.Printf("Dial tcp failed with error: %s", err)
+		}
+
+		defer conn.Close()
+
+		connReader := bufio.NewReader(conn)
+		//This buffer is probably overkill but we don't know the max size
+		buf := make([]byte, 1024)
+
+		_, err = connReader.Read(buf)
 		if err != nil {
 			fmt.Printf("Error reading from connection: %s", err)
-			os.Exit(1)
 		}
 
 		fmt.Println("Read Byte buffer with content: ", buf)
