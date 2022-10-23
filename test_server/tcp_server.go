@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net"
+	"time"
 )
 
 const HEADER string = "AIR"
@@ -49,6 +50,7 @@ func main() {
 		messageBytes = append(messageBytes, Float64bytes(TEMPERATURE)...)
 
 		conn.Write(messageBytes)
+		time.Sleep(time.Second * 5)
 		conn.Close()
 	}
 }
