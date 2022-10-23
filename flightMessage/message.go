@@ -21,9 +21,8 @@ var HEADER = []byte{0x41, 0x49, 0x52}
 
 func CreateMessageFromBinary(messageBytes []byte) *FlightMessage {
 
-	headerBytes := make([]byte, 3)
 	messageReader := bytes.NewReader(messageBytes)
-	messageReader.Read(headerBytes)
+	headerBytes := makeByteSliceAndRead(3, messageReader)
 	fmt.Println("Header bytes are: ", headerBytes)
 
 	if bytes.Compare(headerBytes, HEADER) == 0 {
