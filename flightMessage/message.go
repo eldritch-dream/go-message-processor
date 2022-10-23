@@ -3,6 +3,7 @@ package flightMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 type FlightMessage struct {
@@ -19,17 +20,32 @@ var HEADER = []byte{0x41, 0x49, 0x52}
 
 func CreateMessageFromBinary(messageBytes []byte) *FlightMessage {
 
-	headerBytes := messageBytes[0:3]
+	headerBytes := make([]byte, 3)
+	messageReader := bytes.NewReader(messageBytes)
+	messageReader.Read(headerBytes)
+	fmt.Println("Header bytes are: ", headerBytes)
 
 	if bytes.Compare(headerBytes, HEADER) == 0 {
 
-		messageReader := bytes.NewReader(messageBytes[3:])
+		tailNumberSizeBytes := makeByteSliceAndRead(4, messageReader)
 
-		flightMessage := &FlightMessage{}
-		binary.Read(messageReader, binary.BigEndian, flightMessage)
-		return flightMessage
+		tailNumberSizeValue := binary.BigEndian.Uint32(tailNumberSizeBytes)
+		fmt.Println("Tail Number Size is:", tailNumberSizeValue)
+
+		tailNumberValueBytes := makeByteSliceAndRead(tailNumberSizeValue, messageReader)
+		tailNumberValue := string(tailNumberValueBytes)
+
+		fmt.Println("Tail Number Value is: ", tailNumberValue)
+
+		return &FlightMessage{}
 	}
 
 	return nil
 
+}
+
+func makeByteSliceAndRead(sliceSize uint32, reader *bytes.Reader) []byte {
+	bytesToRead := make([]byte, sliceSize)
+	reader.Read(bytesToRead)
+	return bytesToRead
 }
