@@ -17,7 +17,7 @@ func main() {
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp", server_addr)
 	if err != nil {
-		fmt.Printf("ResolveTCPAddr failed with error: %s", err)
+		fmt.Printf("ResolveTCPAddr failed with error: %s\n", err)
 		os.Exit(1)
 	}
 
@@ -27,7 +27,7 @@ func main() {
 
 		conn, err := net.Dial("tcp", server_addr)
 		if err != nil {
-			fmt.Printf("Dial tcp failed with error: %s", err)
+			fmt.Printf("Dial tcp failed with error: %s\n", err)
 			continue
 		}
 
@@ -39,7 +39,7 @@ func main() {
 
 		numBytesRead, err := connReader.Read(buf)
 		if err != nil {
-			fmt.Printf("Error reading from connection: %s", err)
+			fmt.Printf("Error reading from connection: %s\n", err)
 			conn.Close()
 			continue
 		}
@@ -53,7 +53,7 @@ func main() {
 
 		decodedMessage, err := flightMessage.CreateMessageFromBinary(buf)
 		if err != nil {
-			fmt.Printf("Error decoding message from bytes: %s", err)
+			fmt.Printf("Error decoding message from bytes: %s\n", err)
 			conn.Close()
 			continue
 		}

@@ -130,7 +130,7 @@ func makeByteSliceAndRead(sliceSize uint32, reader *bytes.Reader) ([]byte, error
 	bytesToRead := make([]byte, sliceSize)
 	_, err := reader.Read(bytesToRead)
 	if err != nil {
-		fmt.Printf("Got error from reader.Read, error is: %s", err)
+		fmt.Printf("Got error from reader.Read, error is: %s\n", err)
 		return nil, err
 	}
 
