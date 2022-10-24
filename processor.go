@@ -34,7 +34,7 @@ func main() {
 		defer conn.Close()
 
 		connReader := bufio.NewReader(conn)
-		//This buffer is probably overkill but we don't know the max size
+		//This buffer is probably overkill but I don't know the max size
 		buf := make([]byte, 1024)
 
 		numBytesRead, err := connReader.Read(buf)
@@ -44,12 +44,12 @@ func main() {
 			continue
 		}
 
-		if numBytesRead == 0 {
-			fmt.Println("Read 0 bytes from connection, no need to process empty message")
+		if numBytesRead < 33 {
+			fmt.Println("Read less than 33 bytes from connection, message is probably incomplete")
 			continue
 		}
 
-		fmt.Println("Read Byte buffer with content: ", buf)
+		// fmt.Println("Read Byte buffer with content: ", buf)
 
 		decodedMessage, err := flightMessage.CreateMessageFromBinary(buf)
 		if err != nil {
