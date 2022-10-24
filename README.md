@@ -6,6 +6,8 @@ This golang message processor aims to fulfill the requirements listed in this te
 
 In order to run this simple processor application you will need to run the command `go run .` in the root directory as well as in the test_server directory. You can also change the `server_addr` property in processor.go to a real tcp server if one is available to send messages (see the comment on line 12).
 
+If there is not a real server sending messages you can stand up a test message server in the `testServer` directory. Simply `cd` into that directory and run `go run .` to stand up the server. It will serve a test message every 5 seconds.
+
  Once you run the program on the command line it will try to establish a connection to the server and read the binary message sent along the wire. The application then passes the binary data off to be parsed into a coherent message as defined by the spec in the techinical writeup. Finally, the processor prints out what it decoded from the message.
 
  ## How to test

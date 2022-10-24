@@ -10,7 +10,7 @@ import (
 )
 
 // const server_addr string = "data.salad.com:5000"
-const server_addr string = "localhost:8081"
+const server_addr string = "127.0.0.1:8082"
 
 func main() {
 	fmt.Println("Init Processor")

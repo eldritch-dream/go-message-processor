@@ -31,7 +31,7 @@ func CreateMessageFromBinary(messageBytes []byte) (*FlightMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Header bytes are: ", headerBytes)
+	// fmt.Println("Header bytes are: ", headerBytes)
 
 	if bytes.Compare(headerBytes, HEADER) == 0 {
 		//TODO: Gotta be a better way to make this look cleaner

@@ -25,12 +25,14 @@ func main() {
 	fmt.Println("Launching server...")
 
 	// listen on all interfaces
-	ln, _ := net.Listen("tcp", ":8081")
+	ln, _ := net.Listen("tcp", ":8082")
+	fmt.Println("Server listening on port 8082")
 
 	// run loop forever (or until ctrl-c)
 	for {
 		// accept connection on port
 		conn, _ := ln.Accept()
+		fmt.Println("Accepting connection on port")
 		// send new string back to client
 		var messageBytes []byte
 		messageBytes = append(messageBytes, HEADER...)
@@ -50,8 +52,10 @@ func main() {
 		messageBytes = append(messageBytes, Float64bytes(TEMPERATURE)...)
 
 		conn.Write(messageBytes)
+		fmt.Println("Message written over connection")
 		time.Sleep(time.Second * 5)
 		conn.Close()
+		fmt.Println("Connection closed")
 	}
 }
 
