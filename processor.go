@@ -37,10 +37,15 @@ func main() {
 		//This buffer is probably overkill but we don't know the max size
 		buf := make([]byte, 1024)
 
-		_, err = connReader.Read(buf)
+		numBytesRead, err := connReader.Read(buf)
 		if err != nil {
 			fmt.Printf("Error reading from connection: %s", err)
 			conn.Close()
+			continue
+		}
+
+		if numBytesRead == 0 {
+			fmt.Println("Read 0 bytes from connection, no need to process empty message")
 			continue
 		}
 
