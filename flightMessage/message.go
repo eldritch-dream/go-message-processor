@@ -3,6 +3,7 @@ package flightMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math"
 )
@@ -18,67 +19,130 @@ type FlightMessage struct {
 }
 
 var HEADER = []byte{0x41, 0x49, 0x52}
-//Tested manually through the test_server
-func CreateMessageFromBinary(messageBytes []byte) *FlightMessage {
+
+var byteArraySizeError = errors.New("Byte array does not meet minimum size requirement")
+var unexpectedHeaderError = errors.New("Got unexpected message, header bytes unrecognized")
+
+// CreateMessageFromBinary returns a FlightMessage after decoding the information from a byte array
+func CreateMessageFromBinary(messageBytes []byte) (*FlightMessage, error) {
 
 	messageReader := bytes.NewReader(messageBytes)
-	headerBytes := makeByteSliceAndRead(3, messageReader)
+	headerBytes, err := makeByteSliceAndRead(3, messageReader)
+	if err != nil {
+		return nil, err
+	}
 	fmt.Println("Header bytes are: ", headerBytes)
 
 	if bytes.Compare(headerBytes, HEADER) == 0 {
-
-		tailNumberSizeBytes := makeByteSliceAndRead(4, messageReader)
+		//TODO: Gotta be a better way to make this look cleaner
+		tailNumberSizeBytes, err := makeByteSliceAndRead(4, messageReader)
+		if err != nil {
+			return nil, err
+		}
 
 		tailNumberSizeValue := binary.BigEndian.Uint32(tailNumberSizeBytes)
-		fmt.Println("Tail Number Size is:", tailNumberSizeValue)
+		// fmt.Println("Tail Number Size is:", tailNumberSizeValue)
 
-		tailNumberValueBytes := makeByteSliceAndRead(tailNumberSizeValue, messageReader)
+		tailNumberValueBytes, err := makeByteSliceAndRead(tailNumberSizeValue, messageReader)
+		if err != nil {
+			return nil, err
+		}
 		tailNumberValue := string(tailNumberValueBytes)
-		fmt.Println("Tail Number Value is: ", tailNumberValue)
+		// fmt.Println("Tail Number Value is: ", tailNumberValue)
 
-		engineCountBytes := makeByteSliceAndRead(4, messageReader)
+		engineCountBytes, err := makeByteSliceAndRead(4, messageReader)
+		if err != nil {
+			return nil, err
+		}
 		engineCount := binary.BigEndian.Uint32(engineCountBytes)
-		fmt.Println("Engine Count is: ", engineCount)
+		// fmt.Println("Engine Count is: ", engineCount)
 
-		engineNameSizeBytes := makeByteSliceAndRead(4, messageReader)
+		engineNameSizeBytes, err := makeByteSliceAndRead(4, messageReader)
+		if err != nil {
+			return nil, err
+		}
 		engineNameSize := binary.BigEndian.Uint32(engineNameSizeBytes)
-		fmt.Println("Engine Name Size is: ", engineNameSize)
+		// fmt.Println("Engine Name Size is: ", engineNameSize)
 
-		engineNameValueBytes := makeByteSliceAndRead(engineNameSize, messageReader)
+		engineNameValueBytes, err := makeByteSliceAndRead(engineNameSize, messageReader)
+		if err != nil {
+			return nil, err
+		}
 		engineNameValue := string(engineNameValueBytes)
-		fmt.Println("Engine Name is: ", engineNameValue)
+		// fmt.Println("Engine Name is: ", engineNameValue)
 
-		latitudeBytes := makeByteSliceAndRead(8, messageReader)
-		latitude := Float64frombytes(latitudeBytes)
-		fmt.Println("Latitude is: ", latitude)
+		latitudeBytes, err := makeByteSliceAndRead(8, messageReader)
+		if err != nil {
+			return nil, err
+		}
+		latitude, err := Float64frombytes(latitudeBytes)
+		if err != nil {
+			return nil, err
+		}
+		// fmt.Println("Latitude is: ", latitude)
 
-		longitudeBytes := makeByteSliceAndRead(8, messageReader)
-		longitude := Float64frombytes(longitudeBytes)
-		fmt.Println("Longitude is: ", longitude)
+		longitudeBytes, err := makeByteSliceAndRead(8, messageReader)
+		if err != nil {
+			return nil, err
+		}
+		longitude, err := Float64frombytes(longitudeBytes)
+		if err != nil {
+			return nil, err
+		}
+		// fmt.Println("Longitude is: ", longitude)
 
-		altitudeBytes := makeByteSliceAndRead(8, messageReader)
-		altitude := Float64frombytes(altitudeBytes)
-		fmt.Println("Altitude is: ", altitude)
+		altitudeBytes, err := makeByteSliceAndRead(8, messageReader)
+		if err != nil {
+			return nil, err
+		}
+		altitude, err := Float64frombytes(altitudeBytes)
+		if err != nil {
+			return nil, err
+		}
+		// fmt.Println("Altitude is: ", altitude)
 
-		temperatureBytes := makeByteSliceAndRead(8, messageReader)
-		temperature := Float64frombytes(temperatureBytes)
-		fmt.Println("Temperature is: ", temperature)
+		temperatureBytes, err := makeByteSliceAndRead(8, messageReader)
+		if err != nil {
+			return nil, err
+		}
+		temperature, err := Float64frombytes(temperatureBytes)
+		if err != nil {
+			return nil, err
+		}
+		// fmt.Println("Temperature is: ", temperature)
 
-		return &FlightMessage{tail_number: tailNumberValue, engine_count: int(engineCount), engine_name: engineNameValue, latitude: latitude, longitude: longitude, altitude: altitude, temperature: temperature}
+		return &FlightMessage{
+			tail_number:  tailNumberValue,
+			engine_count: int(engineCount),
+			engine_name:  engineNameValue,
+			latitude:     *latitude,
+			longitude:    *longitude,
+			altitude:     *altitude,
+			temperature:  *temperature}, nil
 	}
 
-	return nil
+	return nil, unexpectedHeaderError
 
 }
 
-func makeByteSliceAndRead(sliceSize uint32, reader *bytes.Reader) []byte {
+// makeByteSliceAndRead takes in a uint32 and byte Reader, creates a byte array of size sliceSize and reads from the Reader into the byte array
+func makeByteSliceAndRead(sliceSize uint32, reader *bytes.Reader) ([]byte, error) {
 	bytesToRead := make([]byte, sliceSize)
-	reader.Read(bytesToRead)
-	return bytesToRead
+	_, err := reader.Read(bytesToRead)
+	if err != nil {
+		fmt.Printf("Got error from reader.Read, error is: %s", err)
+		return nil, err
+	}
+
+	return bytesToRead, nil
 }
 
-func Float64frombytes(bytes []byte) float64 {
+// Float64frombytes takes in a byte array and transforms it into a float64. This function assumes the byte array is BigEndian
+func Float64frombytes(bytes []byte) (*float64, error) {
+	if len(bytes) < 7 {
+		return nil, byteArraySizeError
+	}
 	bits := binary.BigEndian.Uint64(bytes)
 	float := math.Float64frombits(bits)
-	return float
+	return &float, nil
 }

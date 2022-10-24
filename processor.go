@@ -51,7 +51,12 @@ func main() {
 
 		fmt.Println("Read Byte buffer with content: ", buf)
 
-		decodedMessage := flightMessage.CreateMessageFromBinary(buf)
+		decodedMessage, err := flightMessage.CreateMessageFromBinary(buf)
+		if err != nil {
+			fmt.Printf("Error decoding message from bytes: %s", err)
+			conn.Close()
+			continue
+		}
 
 		fmt.Printf("%+v\n", decodedMessage)
 
