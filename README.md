@@ -12,9 +12,10 @@ If there is not a real server sending messages you can stand up a test message s
 
  ## How to test
 
-Run `go test ./...` from the root directory, this will the unit tests.
+Run `go test ./...` from the root directory, this will run the unit tests.
 
 ## Potential improvements
 
 * Implement a makefile build process to make formatting/building/testing/running a little more flexible
 * Use github actions to make build actions happen on commit/push
+* Try to utilize golang concurrency in some way?
