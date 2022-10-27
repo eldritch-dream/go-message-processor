@@ -18,4 +18,4 @@ Run `go test ./...` from the root directory, this will run the unit tests.
 
 * Implement a makefile build process to make formatting/building/testing/running a little more flexible
 * Use github actions to make build actions happen on commit/push
-* Try to utilize golang concurrency in some way?
+* Try to utilize golang concurrency (channels, goroutines) in some way?
