@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("TCP Address resolved to: %s", tcpAddr.String())
+	fmt.Printf("TCP Address resolved to: %s\n", tcpAddr.String())
 
 	for {
 
